@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   LayoutDashboard, Upload, Activity, Binary, Archive, 
-  Shield, Wifi, Lock, User, Search, Radio, FileText
+  Shield, Wifi, Lock, User, Search, Radio, FileText, LogOut
 } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import UploadPanel from './components/UploadPanel';
@@ -53,6 +53,14 @@ export default function App() {
   const [generationMsg, setGenerationMsg] = useState('');
   const [activeMenu, setActiveMenu] = useState('dashboard'); // 'dashboard', 'upload', 'analysis', 'neural_net', 'archive'
   const [searchQuery, setSearchQuery] = useState('');
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setCurrentUser('');
+    setIsNewUser(false);
+    setView('dashboard');
+    setActiveMenu('dashboard');
+  };
 
   const handleUploadSuccess = async ({ project_id, project_name, source_path, repo_url }) => {
     setView('loading');
@@ -207,27 +215,41 @@ export default function App() {
         </nav>
 
         {/* Bottom User Box */}
-        <div className="sidebar-profile">
-          <div className="profile-avatar">
-            <User size={16} />
-          </div>
-          <div className="profile-info">
-            <div className="profile-name">ADM_0X88F2</div>
-            <div className="profile-status">
-              <Shield size={10} />
-              <span>SECURE_CHNL</span>
+        <div className="sidebar-profile" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div className="profile-avatar">
+              <User size={16} />
+            </div>
+            <div className="profile-info">
+              <div className="profile-name" style={{ textTransform: 'uppercase' }}>
+                {currentUser || 'ADM_0X88F2'}
+              </div>
+              <div className="profile-status">
+                <Shield size={10} />
+                <span>SECURE_CHNL</span>
+              </div>
             </div>
           </div>
-          <div style={{
-            position: 'absolute',
-            top: '0.5rem',
-            right: '0.5rem',
-            width: '6px',
-            height: '6px',
-            borderRadius: '50%',
-            backgroundColor: 'var(--primary)',
-            boxShadow: '0 0 5px var(--primary)'
-          }} />
+          <button 
+            onClick={handleLogout}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: 'var(--text-secondary)',
+              cursor: 'pointer',
+              padding: '0.5rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '4px',
+              transition: 'all 0.2s ease'
+            }}
+            title="Log Out"
+            onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--error)'; e.currentTarget.style.background = 'rgba(255, 59, 59, 0.1)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.background = 'transparent'; }}
+          >
+            <LogOut size={16} />
+          </button>
         </div>
       </aside>
 
