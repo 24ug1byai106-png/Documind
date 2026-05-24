@@ -6,7 +6,7 @@ const API_BASE = window.location.origin.includes('localhost:5173')
   ? 'http://localhost:8000/api' 
   : `${window.location.origin}/api`;
 
-export default function ReportsPanel({ onSelectProject }) {
+export default function ReportsPanel({ onSelectProject, currentUser }) {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -15,7 +15,7 @@ export default function ReportsPanel({ onSelectProject }) {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch(`${API_BASE}/projects`);
+      const response = await fetch(`${API_BASE}/projects?username=${encodeURIComponent(currentUser)}`);
       if (!response.ok) {
         throw new Error('Failed to fetch system logs.');
       }

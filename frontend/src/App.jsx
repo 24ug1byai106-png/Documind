@@ -138,6 +138,7 @@ export default function App() {
         return (
           <ReportsPanel 
             onSelectProject={handleSelectProject}
+            currentUser={currentUser}
           />
         );
       case 'viewer':
