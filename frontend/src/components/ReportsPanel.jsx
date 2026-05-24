@@ -79,7 +79,7 @@ export default function ReportsPanel({ onSelectProject, currentUser }) {
             Browse parsed metadata logs and download compiled system logs files.
           </p>
         </div>
-        <button className="btn btn-primary" onClick={handleDownloadReportFile} disabled={loading || projects.length === 0}>
+        <button className="btn btn-primary" onClick={handleDownloadReportFile}>
           <Download size={14} /> EXPORT REPORT FILE
         </button>
       </div>
