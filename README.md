@@ -1,5 +1,7 @@
 # DocuMind AI
 
+**Live Demo:** [https://documind-430k.onrender.com/](https://documind-430k.onrender.com/)
+
 DocuMind AI is a technical documentation generator. It analyzes your repository structure and codebase using AI to generate comprehensive project summaries, professional READMEs, API guides, and developer setup instructions.
 
 ---
