@@ -7,9 +7,13 @@ IGNORE_DIRS = {'node_modules', '.git', 'dist', 'build', 'venv', '__pycache__', '
 IGNORE_EXTS = {'.pyc', '.png', '.jpg', '.jpeg', '.gif', '.ico', '.svg', '.mp4', '.mp3', '.zip', '.tar', '.gz', '.pdf', '.docx'}
 
 def extract_zip(zip_path: str, extract_to: str) -> str:
-    """Extracts a zip file to the given directory."""
+    """Extracts a zip file to the given directory, skipping ignored directories."""
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-        zip_ref.extractall(extract_to)
+        for member in zip_ref.infolist():
+            filename_parts = member.filename.replace('\\', '/').split('/')
+            if any(part in IGNORE_DIRS for part in filename_parts):
+                continue
+            zip_ref.extract(member, extract_to)
     return extract_to
 
 def get_folder_structure(root_dir: str) -> str:

@@ -25,8 +25,8 @@ const Github = ({ size = 24, className, style }) => (
 );
 
 const API_BASE = window.location.origin.includes('localhost:5173') 
-  ? 'http://localhost:8000' 
-  : window.location.origin;
+  ? 'http://localhost:8000/api' 
+  : `${window.location.origin}/api`;
 
 class MarkdownErrorBoundary extends React.Component {
   constructor(props) {

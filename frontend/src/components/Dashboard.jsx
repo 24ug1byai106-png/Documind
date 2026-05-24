@@ -3,8 +3,8 @@ import { Search, FolderGit, Calendar, Plus, ExternalLink, RefreshCw, Cpu, Databa
 import './components.css';
 
 const API_BASE = window.location.origin.includes('localhost:5173') 
-  ? 'http://localhost:8000' 
-  : window.location.origin;
+  ? 'http://localhost:8000/api' 
+  : `${window.location.origin}/api`;
 
 export default function Dashboard({ onSelectProject, onNewProjectClick, searchFilter = '' }) {
   const [projects, setProjects] = useState([]);

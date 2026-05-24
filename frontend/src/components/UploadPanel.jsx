@@ -21,8 +21,8 @@ const Github = ({ size = 24, className, style }) => (
 import './components.css';
 
 const API_BASE = window.location.origin.includes('localhost:5173') 
-  ? 'http://localhost:8000' 
-  : window.location.origin;
+  ? 'http://localhost:8000/api' 
+  : `${window.location.origin}/api`;
 
 export default function UploadPanel({ onUploadSuccess, onGenerationStart, onGenerationError }) {
   const [activeTab, setActiveTab] = useState('github'); // 'github' or 'zip'

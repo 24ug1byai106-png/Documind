@@ -17,10 +17,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include Routers
-app.include_router(upload.router, tags=["Upload"])
-app.include_router(github.router, tags=["GitHub"])
-app.include_router(generate.router, tags=["Generation"])
+# Include Routers with /api prefix to avoid static file mount collision
+app.include_router(upload.router, prefix="/api", tags=["Upload"])
+app.include_router(github.router, prefix="/api", tags=["GitHub"])
+app.include_router(generate.router, prefix="/api", tags=["Generation"])
 
 from fastapi.staticfiles import StaticFiles
 import os
