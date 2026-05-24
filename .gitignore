@@ -1,0 +1,32 @@
+# Node dependencies
+node_modules/
+dist/
+build/
+.svelte-kit/
+.next/
+
+# Python environment
+venv/
+.venv/
+ENV/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment configuration (Contains API keys!)
+.env
+.env.local
+.env.*.local
+
+# Databases & local files
+*.db
+*.sqlite
+backend/uploads/
+backend/generated_docs/
+backend/documind.db
+
+# OS Files
+.DS_Store
+Thumbs.db
