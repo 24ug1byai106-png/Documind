@@ -9,6 +9,7 @@ class GenerateDocsRequest(BaseModel):
     project_name: str
     source_path: str  # Path to the extracted ZIP or cloned repo
     repo_url: Optional[str] = None
+    username: str
 
 class DocsResponse(BaseModel):
     success: bool

@@ -9,6 +9,7 @@ import LoadingProgress from './components/LoadingProgress';
 import ProjectViewer from './components/ProjectViewer';
 import ReportsPanel from './components/ReportsPanel';
 import VitalsPanel from './components/VitalsPanel';
+import Login from './components/Login';
 
 const API_BASE = window.location.origin.includes('localhost:5173') 
   ? 'http://localhost:8000/api' 
@@ -44,6 +45,9 @@ class ErrorBoundary extends React.Component {
 }
 
 export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isNewUser, setIsNewUser] = useState(false);
+  const [currentUser, setCurrentUser] = useState('');
   const [view, setView] = useState('dashboard'); // 'dashboard', 'new_analysis', 'loading', 'viewer'
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [generationMsg, setGenerationMsg] = useState('');
@@ -62,7 +66,8 @@ export default function App() {
           project_id,
           project_name,
           source_path,
-          repo_url
+          repo_url,
+          username: currentUser
         })
       });
 
@@ -110,6 +115,8 @@ export default function App() {
             onSelectProject={handleSelectProject}
             onNewProjectClick={() => navigateMenu('upload')}
             searchFilter={searchQuery}
+            isNewUser={isNewUser}
+            currentUser={currentUser}
           />
         );
       case 'new_analysis':
@@ -143,9 +150,17 @@ export default function App() {
           </ErrorBoundary>
         );
       default:
-        return <Dashboard onSelectProject={handleSelectProject} searchQuery={searchQuery} />;
+        return <Dashboard onSelectProject={handleSelectProject} searchQuery={searchQuery} isNewUser={isNewUser} currentUser={currentUser} />;
     }
   };
+
+  if (!isAuthenticated) {
+    return <Login onLogin={({ isNewUser, username }) => {
+      setIsNewUser(isNewUser);
+      setCurrentUser(username);
+      setIsAuthenticated(true);
+    }} />;
+  }
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--bg-main)', color: 'var(--text-white)' }}>

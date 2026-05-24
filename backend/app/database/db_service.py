@@ -18,6 +18,7 @@ def init_sqlite():
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS generated_projects (
                     id TEXT PRIMARY KEY,
+                    username TEXT NOT NULL,
                     project_name TEXT NOT NULL,
                     repo_url TEXT,
                     readme TEXT,
@@ -44,11 +45,12 @@ def sqlite_save(data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         with get_sqlite_conn() as conn:
             conn.execute(
                 """
-                INSERT INTO generated_projects (id, project_name, repo_url, readme, api_docs, setup_guide, summary, folder_structure, created_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO generated_projects (id, username, project_name, repo_url, readme, api_docs, setup_guide, summary, folder_structure, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     doc_id,
+                    data.get("username", "admin"),
                     data.get("project_name"),
                     data.get("repo_url"),
                     data.get("readme"),
@@ -87,11 +89,11 @@ def sqlite_get(project_id: str) -> Optional[Dict[str, Any]]:
         print(f"SQLite fetch error: {e}")
     return None
 
-def sqlite_get_all() -> list[Dict[str, Any]]:
+def sqlite_get_all(username: str) -> list[Dict[str, Any]]:
     init_sqlite()
     try:
         with get_sqlite_conn() as conn:
-            rows = conn.execute("SELECT id, project_name, repo_url, summary, created_at FROM generated_projects ORDER BY created_at DESC").fetchall()
+            rows = conn.execute("SELECT id, project_name, repo_url, summary, created_at FROM generated_projects WHERE username = ? ORDER BY created_at DESC", (username,)).fetchall()
             return [dict(r) for r in rows]
     except Exception as e:
         print(f"SQLite fetch all error: {e}")
@@ -124,18 +126,18 @@ async def get_project_docs(project_id: str) -> Optional[Dict[str, Any]]:
             
     return sqlite_get(project_id)
 
-async def get_all_projects() -> list[Dict[str, Any]]:
+async def get_all_projects(username: str) -> list[Dict[str, Any]]:
     """Fetches a list of all projects, merging Supabase and SQLite results."""
     projects = []
     if supabase:
         try:
-            response = supabase.table("generated_projects").select("id, project_name, repo_url, summary, created_at").order("created_at", desc=True).execute()
+            response = supabase.table("generated_projects").select("id, project_name, repo_url, summary, created_at").eq("username", username).order("created_at", desc=True).execute()
             if response.data:
                 projects.extend(response.data)
         except Exception as e:
             print(f"Supabase fetch all failed: {e}. Falling back to SQLite only.")
             
-    sqlite_projects = sqlite_get_all()
+    sqlite_projects = sqlite_get_all(username)
     existing_ids = {p["id"] for p in projects}
     for sp in sqlite_projects:
         if sp["id"] not in existing_ids:

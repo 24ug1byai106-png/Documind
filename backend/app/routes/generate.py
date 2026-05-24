@@ -22,6 +22,7 @@ async def generate_documentation(request: GenerateDocsRequest):
         
         # 3. Save to Supabase
         db_data = {
+            "username": request.username,
             "project_name": request.project_name,
             "repo_url": request.repo_url,
             "readme": docs["readme"],
@@ -54,10 +55,10 @@ async def generate_documentation(request: GenerateDocsRequest):
         raise HTTPException(status_code=500, detail=f"Failed to generate documentation: {str(e)}")
 
 @router.get("/projects")
-async def list_projects():
+async def list_projects(username: str):
     try:
         from app.database.db_service import get_all_projects
-        projects = await get_all_projects()
+        projects = await get_all_projects(username)
         return {"success": True, "projects": projects}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
