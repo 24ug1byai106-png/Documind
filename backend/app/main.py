@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import upload, github, generate
+from app.routes import upload, github, generate, auth
 
 app = FastAPI(
     title="DocuMind AI Backend",
@@ -21,6 +21,7 @@ app.add_middleware(
 app.include_router(upload.router, prefix="/api", tags=["Upload"])
 app.include_router(github.router, prefix="/api", tags=["GitHub"])
 app.include_router(generate.router, prefix="/api", tags=["Generation"])
+app.include_router(auth.router, prefix="/api", tags=["Auth"])
 
 from fastapi.staticfiles import StaticFiles
 import os

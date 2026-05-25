@@ -29,12 +29,40 @@ def init_sqlite():
                     created_at TEXT NOT NULL
                 )
             """)
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS users (
+                    username TEXT PRIMARY KEY,
+                    password TEXT NOT NULL
+                )
+            """)
             conn.commit()
     except Exception as e:
         print(f"SQLite initialization error: {e}")
 
 # Initialize SQLite database on module import
 init_sqlite()
+
+def create_user(username: str, password: str) -> bool:
+    init_sqlite()
+    try:
+        with get_sqlite_conn() as conn:
+            conn.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
+            conn.commit()
+            return True
+    except sqlite3.IntegrityError:
+        return False
+
+def verify_user(username: str, password: str) -> bool:
+    init_sqlite()
+    try:
+        with get_sqlite_conn() as conn:
+            row = conn.execute("SELECT password FROM users WHERE username = ?", (username,)).fetchone()
+            if row and row['password'] == password:
+                return True
+            return False
+    except Exception as e:
+        print(f"SQLite verify user error: {e}")
+        return False
 
 def sqlite_save(data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     init_sqlite()

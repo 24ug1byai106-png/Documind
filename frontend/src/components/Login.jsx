@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { ShieldAlert, User, Lock, Terminal, UserPlus } from 'lucide-react';
 import './components.css';
 
+const API_BASE = window.location.origin.includes('localhost:5173') 
+  ? 'http://localhost:8000/api' 
+  : `${window.location.origin}/api`;
+
 export default function Login({ onLogin }) {
   const [isSignUp, setIsSignUp] = useState(true);
   const [username, setUsername] = useState('');
@@ -9,20 +13,48 @@ export default function Login({ onLogin }) {
   const [error, setError] = useState('');
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+
+    // Username validation: no numbers allowed
+    if (/\d/.test(username)) {
+      setError('ACCESS DENIED: Identifier cannot contain numbers.');
+      return;
+    }
+
+    // Password validation: only numbers allowed
+    if (!/^\d+$/.test(password)) {
+      setError('ACCESS DENIED: Passcode must contain only numbers.');
+      return;
+    }
+
     setIsAuthenticating(true);
     
-    // Simulate auth delay for cyber effect
-    setTimeout(() => {
-      // Basic validation for any non-empty input to allow testing
-      if (username && password) {
+    try {
+      const endpoint = isSignUp ? '/signup' : '/login';
+      const response = await fetch(`${API_BASE}${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.detail || 'Authentication failed');
+      }
+
+      if (data.success) {
         onLogin({ isNewUser: isSignUp, username });
       } else {
-        setError('ACCESS DENIED: Invalid credentials');
-        setIsAuthenticating(false);
+        throw new Error(data.message || 'Authentication failed');
       }
-    }, 1200);
+    } catch (err) {
+      setError(`ACCESS DENIED: ${err.message}`);
+    } finally {
+      setIsAuthenticating(false);
+    }
   };
 
   return (
